@@ -7,21 +7,9 @@ import java.util.Random;
 
 public class Test {
     public static void main(String[] args) {
-        Labyrinth labyrinth = new Labyrinth();
-
+        Labyrinth labyrinth = new Labyrinth(30, 60);
         labyrinth.create();
-
         labyrinth.display();
-
-        System.out.println("\n\n\n\n");
-
-        labyrinth.display();
-
     }
-
-
-
-
-
 
 }

@@ -3,17 +3,19 @@ package com.example.labyrinth.classes;
 import java.util.*;
 
 public class Labyrinth {
-    //⬛
-    //⬜
     Random random = new Random();
-    Box[][] grid = new Box[20][20];
+    Box[][] grid;
     boolean created = false;
 
+    public Labyrinth(int length, int witdh) {
+        this.grid = new Box[length][witdh];
+
+    }
 
     public void display() {
-        for (int i = 1; i < this.grid.length; i++) {
-            for (int j = 1; j < this.grid[i].length; j++) {
-                System.out.print(this.grid[i][j].getColor() + " ");
+        for (int line = 1; line < this.grid.length; line++) {
+            for (int column = 1; column < this.grid[line].length; column++) {
+                System.out.print(this.grid[line][column].getColor() + " ");
             }
             System.out.println("");
         }
@@ -30,25 +32,15 @@ public class Labyrinth {
                 this.grid[line][column] = box;
             }
         }
+        Box actualBox = new Box(1, 1);
 
         while (!created) {
-            Box actualBox = new Box(1, 1);
             walk(actualBox);
             actualBox = hunt();
         }
-
     }
 
     private void walk(Box actualBox) {
-        actualBox = new Box(1, 1);
-        for (int line = 1; line < this.grid.length; line++) {
-            for (int column = 1; column < this.grid[line].length; column++) {
-                if (grid[line][column].getType().equals("path")) {
-                    actualBox = grid[line][column];
-                }
-            }
-        }
-
         Map dictX = new HashMap();
         dictX.put("S", 0);
         dictX.put("E", 1);
@@ -80,15 +72,14 @@ public class Labyrinth {
                         && (line + 2 * dline >= 1 && column + 2 * dcolumn >= 1)) {
 
                     if (grid[line + dline][column + dcolumn].compareType("wall")
-                            && !grid[line + 2 * dline][column + 2 * dcolumn].isVisited()) {
+                            && (!grid[line + 2 * dline][column + 2 * dcolumn].isVisited()
+                            && grid[line + 2 * dline][column + 2 * dcolumn].compareType("path"))) {
 
                         grid[line + dline][column + dcolumn].setVisited(true);
                         grid[line + dline][column + dcolumn].changeType();
 
                         grid[line + 2 * dline][column + 2 * dcolumn].setVisited(true);
                         actualBox = grid[line + 2 * dline][column + 2 * dcolumn];
-                        display();
-                        System.out.println();
                         moved = true;
                     }
                 }
@@ -100,7 +91,6 @@ public class Labyrinth {
         }
     }
 
-
     private Box hunt() {
         for (int line = 1; line < this.grid.length; line++) {
             for (int column = 1; column < this.grid[line].length; column++) {
@@ -108,6 +98,9 @@ public class Labyrinth {
                     if (grid[line][column].isBlocked()) {
                         continue;
                     }
+                    else
+                        return grid[line][column];
+
                 }
             }
         }
