@@ -5,15 +5,17 @@ import java.util.ArrayList;
 public class Box {
     int line;
     int column;
-    String color = "⬛";
+    String color = "  ";
     boolean discovered = false;
     String type = "wall";
     boolean visited = false;
     boolean blocked = false;
+    int index = 0;
 
-    public Box(int x, int y) {
+    public Box(int x, int y, int index) {
         this.line = x;
         this.column = y;
+        this.index = index;
     }
 
 
@@ -41,7 +43,7 @@ public class Box {
         this.color = color;
     }
 
-    public ArrayList<Integer> getCord(){
+    public ArrayList<Integer> getCord() {
         ArrayList<Integer> tab = new ArrayList<Integer>();
         tab.add(this.line, this.column);
         return tab;
@@ -55,13 +57,10 @@ public class Box {
         this.discovered = discovered;
     }
 
-    public void changeType(){
-        if (this.color.equals("⬛")) {
-            this.color = "▪";
+    public void changeType() {
+        if (this.type.equals("wall")) {
             this.type = "path";
-        }
-        else {
-            this.color = "⬛";
+        } else {
             this.type = "wall";
         }
     }
@@ -74,7 +73,7 @@ public class Box {
         this.type = type;
     }
 
-    public boolean compareType(String type){
+    public boolean compareType(String type) {
         return type.equals(this.type);
     }
 
@@ -92,5 +91,13 @@ public class Box {
 
     public void setBlocked(boolean blocked) {
         this.blocked = blocked;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
     }
 }

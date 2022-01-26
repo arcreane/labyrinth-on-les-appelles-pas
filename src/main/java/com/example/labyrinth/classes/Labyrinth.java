@@ -7,24 +7,24 @@ public class Labyrinth {
     Box[][] grid;
     boolean created = false;
 
-    private final static String HORIZONTAL  =  "\u2501";
-    private final static String VERTICAL    ="\u2503";
-    private final static String CORNER_TL   ="\u250F";
-    private final static String CORNER_TR   ="\u2513";
-    private final static String CORNER_BL   ="\u2517";
-    private final static String CORNER_BR  = "\u251B";
-    private final static String TEE_TOP     ="\u2533";
-    private final static String TEE_BOTTOM  ="\u253B";
-    private final static String TEE_LEFT    ="\u2523";
-    private final static String TEE_RIGHT   ="\u252B";
-    private final static String CROSS       ="\u254B";
+    private final static String HORIZONTAL = "\u2501";
+    private final static String VERTICAL = "\u2503";
+    private final static String CORNER_TL = "\u250F";
+    private final static String CORNER_TR = "\u2513";
+    private final static String CORNER_BL = "\u2517";
+    private final static String CORNER_BR = "\u251B";
+    private final static String TEE_TOP = "\u2533";
+    private final static String TEE_BOTTOM = "\u253B";
+    private final static String TEE_LEFT = "\u2523";
+    private final static String TEE_RIGHT = "\u252B";
+    private final static String CROSS = "\u254B";
 
     public Labyrinth(int length, int witdh) {
         this.grid = new Box[length][witdh];
 
     }
 
-    private String displayWall(Box wallBox){
+    private String displayWall(Box wallBox) {
         int line = wallBox.getLine();
         int column = wallBox.getColumn();
         boolean leftBox = false;
@@ -34,89 +34,110 @@ public class Labyrinth {
 
 
         try {
-             leftBox = grid[line][column-1].compareType("wall");
+            leftBox = grid[line][column - 1].compareType("wall");
+        } catch (Exception e) {
         }
-        catch (Exception e){}
         try {
-            rightBox = grid[line][column+1].compareType("wall");
+            rightBox = grid[line][column + 1].compareType("wall");
+        } catch (Exception e) {
         }
-        catch (Exception e){}
         try {
-            upBox = grid[line-1][column].compareType("wall");
+            upBox = grid[line - 1][column].compareType("wall");
+        } catch (Exception e) {
         }
-        catch (Exception e){}
         try {
-            downBox = grid[line+1][column].compareType("wall");
+            downBox = grid[line + 1][column].compareType("wall");
+        } catch (Exception e) {
         }
-        catch (Exception e){}
 
 
-        if (!upBox && !downBox){
-            if (!rightBox){
+        if (!upBox && !downBox) {
+            if (!rightBox) {
                 return HORIZONTAL + " ";
             }
 
             return HORIZONTAL + HORIZONTAL;
-        }
-        else if (!leftBox && !rightBox){
-            return  VERTICAL + " ";
-        }
-
-        else if ((rightBox && downBox) && (!upBox && !leftBox)){
+        } else if (!leftBox && !rightBox) {
+            return VERTICAL + " ";
+        } else if ((rightBox && downBox) && (!upBox && !leftBox)) {
             return CORNER_TL + HORIZONTAL;
-        }
-
-        else if ((rightBox && upBox) && (!downBox && !leftBox)){
-            return CORNER_BL+HORIZONTAL;
-        }
-
-        else if ((leftBox && downBox) && (!upBox && !rightBox)){
+        } else if ((rightBox && upBox) && (!downBox && !leftBox)) {
+            return CORNER_BL + HORIZONTAL;
+        } else if ((leftBox && downBox) && (!upBox && !rightBox)) {
             return CORNER_TR + " ";
-        }
-
-        else if ((upBox && leftBox) && (!rightBox && !downBox)){
+        } else if ((upBox && leftBox) && (!rightBox && !downBox)) {
             return CORNER_BR + " ";
-        }
-
-       else if (!leftBox){
-            return  TEE_LEFT+HORIZONTAL;
-        }
-        else  if (!rightBox){
+        } else if (!leftBox) {
+            return TEE_LEFT + HORIZONTAL;
+        } else if (!rightBox) {
             return TEE_RIGHT + " ";
-        }
-        else if (!downBox){
+        } else if (!downBox) {
             return TEE_BOTTOM + HORIZONTAL;
-        }
-        else if (!upBox){
+        } else if (!upBox) {
             return TEE_TOP + HORIZONTAL;
 
-        }
-
-        else {
-            return  CROSS + HORIZONTAL;
+        } else {
+            return CROSS + HORIZONTAL;
         }
 
     }
 
 
     public void display() {
+        clear();
+        System.out.println("\n\n\n");
+        for (int i = 0; i < grid[0].length; i++) {
+            System.out.print(HORIZONTAL + HORIZONTAL);
+        }
+        System.out.println();
         for (int line = 1; line < this.grid.length; line++) {
+            System.out.print(VERTICAL);
             for (int column = 1; column < this.grid[line].length; column++) {
                 if (this.grid[line][column].compareType("path")) {
-                    System.out.print(this.grid[line][column].getColor() + " ");
-                }
-                else {
-                    System.out.print( displayWall(this.grid[line][column]));
+                    System.out.print(this.grid[line][column].getColor());
+                } else {
+                    System.out.print(displayWall(this.grid[line][column]));
                 }
             }
+            System.out.print(VERTICAL);
             System.out.println("");
         }
+        for (int i = 0; i < grid[0].length; i++) {
+            System.out.print(HORIZONTAL + HORIZONTAL);
+        }
+        System.out.println();
+    }
+    public void displayIndex() {
+        clear();
+        System.out.println("\n\n\n");
+        for (int i = 0; i < grid[0].length; i++) {
+            System.out.print(HORIZONTAL + HORIZONTAL);
+        }
+        System.out.println();
+        for (int line = 1; line < this.grid.length; line++) {
+            System.out.print(VERTICAL);
+            for (int column = 1; column < this.grid[line].length; column++) {
+                if (this.grid[line][column].compareType("path")) {
+                    System.out.print(this.grid[line][column].getIndex() + " ");
+                } else {
+                    System.out.print(displayWall(this.grid[line][column]));
+                }
+            }
+            System.out.print(VERTICAL);
+            System.out.println("");
+        }
+        for (int i = 0; i < grid[0].length; i++) {
+            System.out.print(HORIZONTAL + HORIZONTAL);
+        }
+        System.out.println();
     }
 
     public void create() {
+        int index = 1;
         for (int line = 1; line < this.grid.length; line++) {
             for (int column = 1; column < this.grid[line].length; column++) {
-                Box box = new Box(line, column);
+                Box box = new Box(line, column, index);
+                index +=1;
                 if (line % 2 == 0 || column % 2 == 0) {
                 } else {
                     box.changeType();
@@ -124,7 +145,7 @@ public class Labyrinth {
                 this.grid[line][column] = box;
             }
         }
-        Box actualBox = new Box(1, 1);
+        Box actualBox = grid[1][1];
 
         while (!created) {
             walk(actualBox);
@@ -173,6 +194,13 @@ public class Labyrinth {
                         grid[line + 2 * dline][column + 2 * dcolumn].setVisited(true);
                         actualBox = grid[line + 2 * dline][column + 2 * dcolumn];
                         moved = true;
+                        /*clear();
+                        display();
+                        try {
+                            Thread.sleep(25);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }*/
                     }
                 }
             }
@@ -189,14 +217,53 @@ public class Labyrinth {
                 if (grid[line][column].getType().equals("path") && grid[line][column].isVisited()) {
                     if (grid[line][column].isBlocked()) {
                         continue;
-                    }
-                    else
+                    } else
                         return grid[line][column];
-
                 }
             }
         }
         created = true;
         return null;
+    }
+
+    private void clear() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
+
+
+    public void gameStart() {
+        placeEmoji("▪ ");
+        placeEmoji("▫ ");
+    }
+
+    private void placeEmoji(String emoji) {
+        Random random = new Random();
+        int line;
+        int column;
+        boolean choosed = false;
+        while (!choosed) {
+            line = random.nextInt(grid[0].length - 1) + 1;
+            column = random.nextInt(grid.length - 1) + 1;
+
+            for (int i = 0; i < grid.length; i++) {
+                for (int j = 0; j < grid[i].length; j++) {
+                    if (i == line && j == column) {
+                        if (grid[line][column].compareType("path")) {
+                            grid[line][column].setColor(emoji);
+                            choosed = true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public Box[][] getGrid() {
+        return grid;
+    }
+
+    public void setGrid(Box[][] grid) {
+        this.grid = grid;
     }
 }
