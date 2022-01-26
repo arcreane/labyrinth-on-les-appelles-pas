@@ -9,4 +9,6 @@ module com.example.labyrinth {
 
     opens com.example.labyrinth to javafx.fxml;
     exports com.example.labyrinth;
+    exports com.example.labyrinth.classes;
+    opens com.example.labyrinth.classes to javafx.fxml;
 }
