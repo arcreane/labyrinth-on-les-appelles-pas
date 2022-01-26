@@ -7,15 +7,107 @@ public class Labyrinth {
     Box[][] grid;
     boolean created = false;
 
+    private final static String HORIZONTAL  =  "\u2501";
+    private final static String VERTICAL    ="\u2503";
+    private final static String CORNER_TL   ="\u250F";
+    private final static String CORNER_TR   ="\u2513";
+    private final static String CORNER_BL   ="\u2517";
+    private final static String CORNER_BR  = "\u251B";
+    private final static String TEE_TOP     ="\u2533";
+    private final static String TEE_BOTTOM  ="\u253B";
+    private final static String TEE_LEFT    ="\u2523";
+    private final static String TEE_RIGHT   ="\u252B";
+    private final static String CROSS       ="\u254B";
+
     public Labyrinth(int length, int witdh) {
         this.grid = new Box[length][witdh];
 
     }
 
+    private String displayWall(Box wallBox){
+        int line = wallBox.getLine();
+        int column = wallBox.getColumn();
+        boolean leftBox = false;
+        boolean upBox = false;
+        boolean rightBox = false;
+        boolean downBox = false;
+
+
+        try {
+             leftBox = grid[line][column-1].compareType("wall");
+        }
+        catch (Exception e){}
+        try {
+            rightBox = grid[line][column+1].compareType("wall");
+        }
+        catch (Exception e){}
+        try {
+            upBox = grid[line-1][column].compareType("wall");
+        }
+        catch (Exception e){}
+        try {
+            downBox = grid[line+1][column].compareType("wall");
+        }
+        catch (Exception e){}
+
+
+        if (!upBox && !downBox){
+            if (!rightBox){
+                return HORIZONTAL + " ";
+            }
+
+            return HORIZONTAL + HORIZONTAL;
+        }
+        else if (!leftBox && !rightBox){
+            return  VERTICAL + " ";
+        }
+
+        else if ((rightBox && downBox) && (!upBox && !leftBox)){
+            return CORNER_TL + HORIZONTAL;
+        }
+
+        else if ((rightBox && upBox) && (!downBox && !leftBox)){
+            return CORNER_BL+HORIZONTAL;
+        }
+
+        else if ((leftBox && downBox) && (!upBox && !rightBox)){
+            return CORNER_TR + " ";
+        }
+
+        else if ((upBox && leftBox) && (!rightBox && !downBox)){
+            return CORNER_BR + " ";
+        }
+
+       else if (!leftBox){
+            return  TEE_LEFT+HORIZONTAL;
+        }
+        else  if (!rightBox){
+            return TEE_RIGHT + " ";
+        }
+        else if (!downBox){
+            return TEE_BOTTOM + HORIZONTAL;
+        }
+        else if (!upBox){
+            return TEE_TOP + HORIZONTAL;
+
+        }
+
+        else {
+            return  CROSS + HORIZONTAL;
+        }
+
+    }
+
+
     public void display() {
         for (int line = 1; line < this.grid.length; line++) {
             for (int column = 1; column < this.grid[line].length; column++) {
-                System.out.print(this.grid[line][column].getColor() + " ");
+                if (this.grid[line][column].compareType("path")) {
+                    System.out.print(this.grid[line][column].getColor() + " ");
+                }
+                else {
+                    System.out.print( displayWall(this.grid[line][column]));
+                }
             }
             System.out.println("");
         }

@@ -57,7 +57,7 @@ public class Box {
 
     public void changeType(){
         if (this.color.equals("⬛")) {
-            this.color = "⬜";
+            this.color = "▪";
             this.type = "path";
         }
         else {
