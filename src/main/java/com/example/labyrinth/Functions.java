@@ -23,8 +23,9 @@ public class Functions {
         System.out.println("""
                 MENU :\s
                 1 : Labyrinth Generation\s
-                2 : Options\s
-                3 : Leave\s
+                2 : Rules\s
+                3 : Options\s
+                4 : Leave\s
                 """);
         return sc.nextInt();
     }
@@ -171,6 +172,24 @@ public class Functions {
         }
     }
 
+
+
+    public static void Rules(){
+        Labyrinth labyrinthRule = new Labyrinth(10, 30, false);
+        labyrinthRule.create();
+        labyrinthRule.gameStart();
+        labyrinthRule.display();
+        System.out.println("""
+                    Rules :\s
+                        You are the white dot (▪) and have to go to the empty dot (▫)\s
+                        You will need to go through the Labyrinth and find your path\s
+                        You need to use z-q-s-d (z - up / s - down / q - left / d - right)\s
+                        If you can't find the exit you can surrender and let the computer finish it for you\s
+                """);
+        System.out.println("Press any key to continue");
+        sc.next();
+        Finder.bfs(labyrinthRule.getGrid(), true);
+    }
     private static void clear() {
         System.out.print("\033[H\033[2J");
         System.out.flush();

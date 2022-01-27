@@ -3,7 +3,6 @@ package com.example.labyrinth.classes;
 import java.util.*;
 
 public class Labyrinth {
-    Random random = new Random();
     Box[][] grid;
     boolean created = false;
     boolean animations = true;
@@ -109,6 +108,7 @@ public class Labyrinth {
         }
         System.out.println();
     }
+
     public void displayIndex() {
         clear();
         System.out.println("\n\n\n");
@@ -139,7 +139,7 @@ public class Labyrinth {
         for (int line = 1; line < this.grid.length; line++) {
             for (int column = 1; column < this.grid[line].length; column++) {
                 Box box = new Box(line, column, index);
-                index +=1;
+                index += 1;
                 if (line % 2 == 0 || column % 2 == 0) {
                 } else {
                     box.changeType();
@@ -286,4 +286,5 @@ public class Labyrinth {
     public void setGrid(Box[][] grid) {
         this.grid = grid;
     }
+
 }
