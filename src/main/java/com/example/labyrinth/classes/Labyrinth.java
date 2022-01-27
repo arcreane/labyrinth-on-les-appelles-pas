@@ -6,6 +6,7 @@ public class Labyrinth {
     Random random = new Random();
     Box[][] grid;
     boolean created = false;
+    boolean animations = true;
 
     private final static String HORIZONTAL = "\u2501";
     private final static String VERTICAL = "\u2503";
@@ -19,8 +20,9 @@ public class Labyrinth {
     private final static String TEE_RIGHT = "\u252B";
     private final static String CROSS = "\u254B";
 
-    public Labyrinth(int length, int witdh) {
+    public Labyrinth(int length, int witdh, boolean animation) {
         this.grid = new Box[length][witdh];
+        this.animations = animation;
 
     }
 
@@ -151,6 +153,8 @@ public class Labyrinth {
             walk(actualBox);
             actualBox = hunt();
         }
+        clear();
+        display();
     }
 
     private void walk(Box actualBox) {
@@ -194,13 +198,29 @@ public class Labyrinth {
                         grid[line + 2 * dline][column + 2 * dcolumn].setVisited(true);
                         actualBox = grid[line + 2 * dline][column + 2 * dcolumn];
                         moved = true;
-                        /*clear();
-                        display();
-                        try {
-                            Thread.sleep(25);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }*/
+                        if (animations) {
+                            clear();
+                            display();
+                            if (grid.length < 40 && grid[0].length < 40) {
+                                try {
+                                    Thread.sleep(80);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            } else if (grid.length < 60 && grid[0].length < 60) {
+                                try {
+                                    Thread.sleep(60);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                try {
+                                    Thread.sleep(20);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
                     }
                 }
             }

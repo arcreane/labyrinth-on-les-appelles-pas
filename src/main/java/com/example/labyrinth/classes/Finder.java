@@ -8,7 +8,7 @@ public class Finder {
     to the starting point and then find the path to the end point.
     This algorithm use 5 steps :
     */
-    public static Box[][] bfs(Box[][] grid) {
+    public static Box[][] bfs(Box[][] grid, boolean animation) {
         //Variable initializations
         int actualIndex = 0;
         int W = grid[0].length;
@@ -17,7 +17,7 @@ public class Finder {
 
 
         //Object creations
-        Box actualBox;
+        Box actualBox = new Box(0, 0, 0);
         Map<Integer, Box> dictBox = new HashMap<>();
         Map dictX = new HashMap();
         Map dictY = new HashMap();
@@ -51,6 +51,7 @@ public class Finder {
                 }
             }
         }
+        int startingIndex = actualIndex;
         P.put(actualIndex, 0);
         Q.add(actualIndex);
 
@@ -88,15 +89,17 @@ public class Finder {
                     if (!Discover.contains(grid[line + dline][column + dcolumn].getIndex())) {
                         //Verify if the cell is a "path" cell
                         if (grid[line + dline][column + dcolumn].compareType("path")) {
-                            //Register the cell and add it to the queue so the loop can look for her neighbour later
-                            P.put(grid[line + dline][column + dcolumn].getIndex(), actualIndex);
-                            Q.add(grid[line + dline][column + dcolumn].getIndex());
-                            Discover.add(grid[line + dline][column + dcolumn].getIndex());
-                            //verify if the cell is the ending cell, if yes the loop will stop, this cell will be
-                            // registered and the BFS continue
-                            if (grid[line + dline][column + dcolumn].getColor().equals("▫ ")) {
-                                actualIndex = grid[line + dline][column + dcolumn].getIndex();
-                                exitFound = true;
+                            if (grid[line + dline][column + dcolumn].getIndex() != startingIndex) {
+                                //Register the cell and add it to the queue so the loop can look for her neighbour later
+                                P.put(grid[line + dline][column + dcolumn].getIndex(), actualIndex);
+                                Q.add(grid[line + dline][column + dcolumn].getIndex());
+                                Discover.add(grid[line + dline][column + dcolumn].getIndex());
+                                //verify if the cell is the ending cell, if yes the loop will stop, this cell will be
+                                // registered and the BFS continue
+                                if (grid[line + dline][column + dcolumn].getColor().equals("▫ ")) {
+                                    actualIndex = grid[line + dline][column + dcolumn].getIndex();
+                                    exitFound = true;
+                                }
                             }
                         }
                     }
@@ -116,7 +119,7 @@ public class Finder {
         }
 
         //A Labyrinth is created and the grid is attributed to him
-        Labyrinth labyrinth = new Labyrinth(0, 0);
+        Labyrinth labyrinth = new Labyrinth(0, 0, animation);
         labyrinth.setGrid(grid);
 
         //The first element of the pile is popped out because it is the 0 (the father of the starting cell is registered as 0)
@@ -135,16 +138,40 @@ public class Finder {
             int column = actualBox.getColumn();
             grid[line][column].setColor("▪ ");
             labyrinth.setGrid(grid);
-            //Clear and redraw
-            clear();
-            labyrinth.display();
-            //Pause between each draw
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            if (animation) {
+                //Clear and redraw
+                clear();
+                labyrinth.display();
+                //Pause between each draw
+                if (grid.length < 20 && grid[0].length < 20) {
+                    try {
+                        Thread.sleep(80);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                } else if (grid.length < 30 && grid[0].length < 30) {
+                    try {
+                        Thread.sleep(60);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                } else if (grid.length < 60 && grid[0].length < 60) {
+                    try {
+                        Thread.sleep(30);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
+        clear();
+        labyrinth.display();
         return grid;
     }
 
