@@ -9,6 +9,7 @@ public class Game {
             choice = Functions.Menu();
 
             if (choice == 1) {
+                Functions.MenuMap();
                 Functions.Play();
             }
             else if (choice == 2){

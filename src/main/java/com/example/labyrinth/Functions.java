@@ -35,21 +35,9 @@ public class Functions {
     }
 
     public static void Play() {
-        int height;
-        int width;
-        if (!labyrinthImported) {
-            clear();
-            System.out.println("Please choose the size of your labyrinth :");
-            System.out.print("Height : ");
-            height = sc.nextInt();
-            System.out.print("Width : ");
-            width = sc.nextInt();
-            labyrinth = new Labyrinth(height, width, animation);
-            labyrinth.create();
-            labyrinth.gameStart();
-            labyrinth.display();
-        }
-        else {
+        int height = 0;
+        int width = 0;
+        if (labyrinthImported){
             height = labyrinth.getGrid().length;
             width = labyrinth.getGrid()[1].length;
             labyrinthImported = false;
@@ -100,15 +88,9 @@ public class Functions {
                 automated = false;
                 continue;
             } else {
-                System.out.println("Please choose the size of your labyrinth :");
-                System.out.print("Height : ");
-                height = sc.nextInt();
-                System.out.print("Width : ");
-                width = sc.nextInt();
-                labyrinth = new Labyrinth(height, width, animation);
-                labyrinth.create();
-                labyrinth.gameStart();
-                labyrinth.display();
+                MenuMap();
+                Play();
+                return;
             }
             resolved = false;
             while (!resolved) {
@@ -285,6 +267,53 @@ public class Functions {
                 labyrinth.Reset();
                 Play();
             }
+        }
+    }
+
+
+    public static void MenuMap(){
+        boolean choiceDone = false;
+        while(!choiceDone) {
+            clear();
+            System.out.println("Please choose the size of your labyrinth :");
+            System.out.println("1 :small" +
+                    "\n2 :medium" +
+                    "\n3 :large" +
+                    "\n4 :custom");
+            int choice = sc.nextInt();
+            int height = 0;
+            int width = 0;
+            switch (choice) {
+                case 1:
+                    height = 20;
+                    width = 20;
+                    choiceDone = true;
+                    break;
+                case 2:
+                    height = 30;
+                    width = 50;
+                    choiceDone = true;
+                    break;
+                case 3:
+                    height = 40;
+                    width = 80;
+                    choiceDone = true;
+                    break;
+                case 4:
+                    System.out.println("Please choose the size of your labyrinth :");
+                    System.out.print("Height : ");
+                    height = sc.nextInt();
+                    System.out.print("Width : ");
+                    width = sc.nextInt();
+                    choiceDone = true;
+                    break;
+                default:
+                    System.out.println("Please choose a valid option");
+            }
+            labyrinth = new Labyrinth(height, width, animation);
+            labyrinth.create();
+            labyrinth.gameStart();
+            labyrinth.display();
         }
     }
 }
