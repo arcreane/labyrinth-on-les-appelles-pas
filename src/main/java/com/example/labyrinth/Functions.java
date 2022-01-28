@@ -8,17 +8,19 @@ import java.io.*;
 import java.util.*;
 
 public class Functions {
+    private static int animationSpeed = 50;
     public static Scanner sc = new Scanner(System.in);
     private static boolean animation = false;
-    private static Labyrinth labyrinth = new Labyrinth(0, 0, animation);
+    private static Labyrinth labyrinth = new Labyrinth(0, 0, animation, animationSpeed);
     private static int turn = 0;
     private static boolean exitFund = false;
     private static boolean automated = false;
     private static boolean labyrinthImported = false;
 
+    //Principal Menu, from here the player can start a game, modify his options, see the rules or the score
     public static int Menu(){
         clear();
-        labyrinth = new Labyrinth(12, 30, animation);
+        labyrinth = new Labyrinth(12, 30, animation, animationSpeed);
         labyrinth.create();
         clear();
         labyrinth.display();
@@ -34,7 +36,9 @@ public class Functions {
         return sc.nextInt();
     }
 
+    //Functions that let the player play a Maze and play again at the end if he wants
     public static void Play() {
+        exitFund = false;
         int height;
         int width;
         if (!labyrinthImported) {
@@ -44,16 +48,14 @@ public class Functions {
             height = sc.nextInt();
             System.out.print("Width : ");
             width = sc.nextInt();
-            labyrinth = new Labyrinth(height, width, animation);
+            labyrinth = new Labyrinth(height, width, animation, animationSpeed);
             labyrinth.create();
             labyrinth.gameStart();
-            labyrinth.display();
         }
         else {
             height = labyrinth.getGrid().length;
             width = labyrinth.getGrid()[1].length;
             labyrinthImported = false;
-            labyrinth.display();
         }
         int choice;
         boolean resolved = false;
@@ -61,10 +63,10 @@ public class Functions {
             if (exitFund){
                 break;
             }
-            System.out.println("Use z-q-s-d to move and press enter; press 0 to resolve");
+            System.out.println("Turn : " + turn + "\nUse z-q-s-d to move and press enter | press 0 to resolve");
             String Strchoice = sc.next();
             if (Strchoice.equals("0")) {
-                labyrinth.setGrid(Finder.bfs(labyrinth.getGrid(), animation));
+                labyrinth.setGrid(Finder.bfs(labyrinth.getGrid(), animation, animationSpeed));
                 labyrinth.display();
                 resolved = true;
                 automated = true;
@@ -82,13 +84,13 @@ public class Functions {
                     Play again ?\s
                     1 : With the same size\s
                     2 : With a different size\s
-                    3 : Menu\s\n""" +
+                    3 : Menu\s""" +
                     score);
             choice = sc.nextInt();
             if (choice == 3) {
                 break;
             } else if (choice == 1) {
-                labyrinth = new Labyrinth(height, width, animation);
+                labyrinth = new Labyrinth(height, width, animation, animationSpeed);
                 labyrinth.create();
                 labyrinth.gameStart();
                 labyrinth.display();
@@ -105,7 +107,7 @@ public class Functions {
                 height = sc.nextInt();
                 System.out.print("Width : ");
                 width = sc.nextInt();
-                labyrinth = new Labyrinth(height, width, animation);
+                labyrinth = new Labyrinth(height, width, animation, animationSpeed);
                 labyrinth.create();
                 labyrinth.gameStart();
                 labyrinth.display();
@@ -115,7 +117,7 @@ public class Functions {
                 System.out.println("Use z-q-s-d to move and press enter; press 0 to resolve");
                 String Strchoice = sc.next();
                 if (Strchoice.equals("0")) {
-                    labyrinth.setGrid(Finder.bfs(labyrinth.getGrid(), animation));
+                    labyrinth.setGrid(Finder.bfs(labyrinth.getGrid(), animation, animationSpeed));
                     labyrinth.display();
                     resolved = true;
                 } else if (Strchoice.equals("z") || Strchoice.equals("q") || Strchoice.equals("s") || Strchoice.equals("d")) {
@@ -126,19 +128,77 @@ public class Functions {
     }
 
     public static void Options(){
-        String anim;
-        if (animation)
-            anim = "(Currently Enabled)";
-        else
-            anim = "(Currently Disabled)";
-        clear();
-        System.out.println("OPTIONS : \n" +
-                "1 : Disable/Enable Labyrinth Animations " + anim + " \n" +
-                "2 : Return to menu" +
-                "");
-        int choice = sc.nextInt();
-        if (choice == 1){
-            animation = !animation;
+        boolean optionDone = false;
+        while (!optionDone) {
+            StringBuilder anim;
+            if (animation)
+                anim = new StringBuilder("(Currently Enabled)");
+            else
+                anim = new StringBuilder("(Currently Disabled)");
+            clear();
+            int animationSpeedDisplay = animationSpeed;
+            StringBuilder animSpeed = new StringBuilder("Current speed : ");
+            for (int i = 0; i < 10; i++) {
+                if (animationSpeedDisplay > 0) {
+                    animationSpeedDisplay -= 10;
+                    animSpeed.append("▪");
+                } else {
+                    animSpeed.append("▫");
+                }
+            }
+            System.out.println("OPTIONS : \n" +
+                    "1 : Disable/Enable Labyrinth Animations " + anim + " \n" +
+                    "2 : Change the animation speed - " + animSpeed + "\n" +
+                    "3 : Return to menu" +
+                    "");
+            int choice = sc.nextInt();
+            if (choice == 1) {
+                animation = !animation;
+            } else if (choice == 2) {
+                boolean choiceDone = false;
+                while (!choiceDone) {
+                    clear();
+                    animationSpeedDisplay = animationSpeed;
+                    System.out.print("Animation speed : ");
+                    for (int i = 0; i < 10; i++) {
+                        if (animationSpeedDisplay < 100) {
+                            animationSpeedDisplay += 10;
+                            System.out.print("▪");
+                        } else {
+                            System.out.print("▫");
+                        }
+                    }
+
+                    System.out.println("\nPress a or d to change the speed and q to quit");
+                    String strChoice = sc.next();
+                    switch (strChoice) {
+                        case "a":
+                            if (animationSpeed < 100) {
+                                animationSpeed += 10;
+                            } else
+                                System.out.println("You have already reached the minimum value");
+                            break;
+                        case "d":
+                            if (animationSpeed > 10) {
+                                animationSpeed -= 10;
+                                if (animationSpeed < 10)
+                                    animationSpeed = 1;
+                            } else
+                                System.out.println("You have already reached the maximum value");
+
+                            break;
+                        case "q":
+                            choiceDone = true;
+                            break;
+                        default:
+                            System.out.println("Please enter 'a', 'd' or 'q'");
+                            break;
+                    }
+                }
+            }
+            else if (choice == 3){
+                optionDone = true;
+            }
         }
     }
 
@@ -202,7 +262,7 @@ public class Functions {
 
 
     public static void Rules(){
-        Labyrinth labyrinthRule = new Labyrinth(10, 30, false);
+        Labyrinth labyrinthRule = new Labyrinth(10, 30, false, animationSpeed);
         labyrinthRule.create();
         labyrinthRule.gameStart();
         labyrinthRule.display();
@@ -215,7 +275,7 @@ public class Functions {
                 """);
         System.out.println("Press any key to continue");
         sc.next();
-        Finder.bfs(labyrinthRule.getGrid(), true);
+        Finder.bfs(labyrinthRule.getGrid(), true, animationSpeed);
     }
     private static void clear() {
         System.out.print("\033[H\033[2J");
@@ -226,11 +286,11 @@ public class Functions {
 
     static Labyrinth read(String filePath){
         String path = "/Users/celian/IdeaProjects/labyrinth/src/main/java/com/example/labyrinth/mazeSave/";
-        File fichier =  new File(path + filePath) ;
+        File file =  new File(path + filePath) ;
 
         ObjectInputStream ois = null;
         try {
-            ois = new ObjectInputStream(new FileInputStream(fichier));
+            ois = new ObjectInputStream(new FileInputStream(file));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -275,6 +335,12 @@ public class Functions {
                 i ++;
             }
         }
+
+
+
+
+
+
 
         System.out.println("Choose a Maze you want to try or press 0 to go back");
         int choice = sc.nextInt();

@@ -14,6 +14,7 @@ public class Labyrinth implements Serializable {
     boolean animations;
     int lineStart;
     int columnStart;
+    int animSpeed;
 
     //Variables initialization, these variables are used to display the walls
     private final static String HORIZONTAL = "\u2501";
@@ -29,9 +30,10 @@ public class Labyrinth implements Serializable {
     private final static String CROSS = "\u254B";
 
     //Constructor, need the number of lines and columns and if the animation is enabled or not
-    public Labyrinth(int line, int column, boolean animation) {
+    public Labyrinth(int line, int column, boolean animation, int animSpeed) {
         this.grid = new Box[line][column];
         this.animations = animation;
+        this.animSpeed = animSpeed;
     }
 
     //Used to check what type is the wall and to change his corresponding character
@@ -140,7 +142,6 @@ public class Labyrinth implements Serializable {
             actualBox = hunt();
         }
         clear();
-        display();
     }
 
     //This function will start from a given Box and then go around the maze while breaking walls while the Box isn't blocked
@@ -190,24 +191,10 @@ public class Labyrinth implements Serializable {
                         if (animations) {
                             clear();
                             display();
-                            if (grid.length < 40 && grid[0].length < 40) {
-                                try {
-                                    Thread.sleep(80);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                            } else if (grid.length < 60 && grid[0].length < 60) {
-                                try {
-                                    Thread.sleep(60);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                            } else {
-                                try {
-                                    Thread.sleep(20);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
+                            try {
+                                Thread.sleep(animSpeed);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
                             }
                         }
                     }
@@ -300,6 +287,7 @@ public class Labyrinth implements Serializable {
         grid[lineStart][columnStart].setColor("▪ ");
     }
 
-
-
+    public void setAnimSpeed(int animSpeed) {
+        this.animSpeed = animSpeed;
+    }
 }

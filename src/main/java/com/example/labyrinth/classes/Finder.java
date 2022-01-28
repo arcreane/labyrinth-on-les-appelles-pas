@@ -8,7 +8,7 @@ public class Finder {
     to the starting point and then find the path to the end point.
     This algorithm use 5 steps :
     */
-    public static Box[][] bfs(Box[][] grid, boolean animation) {
+    public static Box[][] bfs(Box[][] grid, boolean animation, int animSpeed) {
         //Variable initializations
         int actualIndex = 0;
         int W = grid[0].length;
@@ -119,7 +119,7 @@ public class Finder {
         }
 
         //A Labyrinth is created and the grid is attributed to him
-        Labyrinth labyrinth = new Labyrinth(0, 0, animation);
+        Labyrinth labyrinth = new Labyrinth(0, 0, animation, animSpeed);
         labyrinth.setGrid(grid);
 
         //The first element of the pile is popped out because it is the 0 (the father of the starting cell is registered as 0)
