@@ -135,8 +135,16 @@ public class Labyrinth implements Serializable {
                 this.grid[line][column] = box;
             }
         }
-        Box actualBox = grid[1][1];
-
+        Random random = new Random();
+        boolean isPath = false;
+        Box actualBox =  grid[1][1];
+        while (!isPath) {
+            int line = random.nextInt((grid.length - 2))+1;
+            int column = random.nextInt((grid[0].length -2)) +1;
+            actualBox = grid[line][column];
+            if (actualBox.compareType("path"))
+                isPath = true;
+        }
         while (!created) {
             walk(actualBox);
             actualBox = hunt();
@@ -232,20 +240,53 @@ public class Labyrinth implements Serializable {
 
 
     //Place the starting point and the ending point on the maze
+    public void gameStartRandom() {
+        placeEmoji("▪ ", 0, 0);
+        placeEmoji("▫ ", 0, 0);
+    }
     public void gameStart() {
-        placeEmoji("▪ ");
-        placeEmoji("▫ ");
+        Random random = new Random();
+        int x = random.nextInt(4);
+        switch (x) {
+            case 0 -> {
+                placeEmoji("▪ ", 1, 1);
+                placeEmoji("▫ ", grid.length - 1, grid[1].length - 1);
+            }
+            case 1 -> {
+                placeEmoji("▪ ", grid.length - 1, 1);
+                placeEmoji("▫ ", 1, grid[1].length - 1);
+            }
+            case 2 -> {
+                placeEmoji("▪ ", 1, grid[1].length - 1);
+                placeEmoji("▫ ", grid.length - 1, 1);
+            }
+            case 3 -> {
+                placeEmoji("▪ ", grid.length - 1, grid[1].length - 1);
+                placeEmoji("▫ ", 1, 1);
+            }
+        }
     }
 
     //Place the "emoji" given in a random position
-    private void placeEmoji(String emoji) {
+    private void placeEmoji(String emoji, int line, int column) {
         Random random = new Random();
-        int line;
-        int column;
+        boolean randomLine = false;
+        boolean randomColumn = false;
+
+        if (line == 0 ){
+            line = random.nextInt(grid[0].length - 1) + 1;
+            randomLine = true;
+        }
+        if (column == 0){
+            column = random.nextInt(grid.length - 1) + 1;
+            randomColumn = true;
+        }
         boolean chosed = false;
         while (!chosed) {
-            line = random.nextInt(grid[0].length - 1) + 1;
-            column = random.nextInt(grid.length - 1) + 1;
+            if (randomLine)
+                line = random.nextInt(grid[0].length - 1) + 1;
+            if (randomColumn)
+                column = random.nextInt(grid.length - 1) + 1;
 
             for (int i = 0; i < grid.length; i++) {
                 for (int j = 0; j < grid[i].length; j++) {
@@ -285,9 +326,5 @@ public class Labyrinth implements Serializable {
             }
         }
         grid[lineStart][columnStart].setColor("▪ ");
-    }
-
-    public void setAnimSpeed(int animSpeed) {
-        this.animSpeed = animSpeed;
     }
 }

@@ -16,6 +16,7 @@ public class Functions {
     private static boolean exitFund = false;
     private static boolean automated = false;
     private static boolean labyrinthImported = false;
+    private static boolean randomPoint = false;
 
     //Principal Menu, from here the player can start a game, modify his options, see the rules or the score
     public static int Menu(){
@@ -33,7 +34,15 @@ public class Functions {
                 5 : Leave\s
                 """);
 
-        return sc.nextInt();
+        int choice = 0;
+        boolean choiceValid = false;
+        try {
+           choice = sc.nextInt();
+        }
+        catch (Exception e){
+            System.out.println("Please enter an integer");
+        }
+        return choice;
     }
 
     //Functions that let the player play a Maze and play again at the end if he wants
@@ -50,6 +59,7 @@ public class Functions {
         int choice;
         boolean resolved = false;
         while (!resolved) {
+            automated = false;
             if (exitFund){
                 break;
             }
@@ -74,15 +84,20 @@ public class Functions {
                     Play again ?\s
                     1 : With the same size\s
                     2 : With a different size\s
-                    3 : Menu\s""" +
+                    3 : Menu\s\n""" +
                     score);
             choice = sc.nextInt();
             if (choice == 3) {
                 break;
             } else if (choice == 1) {
-                labyrinth = new Labyrinth(height, width, animation, animationSpeed);
+                height = labyrinth.getGrid()[0].length;
+                width = labyrinth.getGrid().length;
+                labyrinth = new Labyrinth(width, height, animation, animationSpeed);
                 labyrinth.create();
-                labyrinth.gameStart();
+                if (randomPoint)
+                    labyrinth.gameStartRandom();
+                else
+                    labyrinth.gameStart();
                 labyrinth.display();
             }
             else if (!automated && choice==4){
@@ -248,7 +263,7 @@ public class Functions {
     public static void Rules(){
         Labyrinth labyrinthRule = new Labyrinth(10, 30, false, animationSpeed);
         labyrinthRule.create();
-        labyrinthRule.gameStart();
+        labyrinthRule.gameStartRandom();
         labyrinthRule.display();
         System.out.println("""
                     Rules :\s
@@ -374,8 +389,27 @@ public class Functions {
             }
             labyrinth = new Labyrinth(height, width, animation, animationSpeed);
             labyrinth.create();
-            labyrinth.gameStart();
+            choiceDone = false;
+            while (!choiceDone){
+                System.out.println("Do you want to place your starting point and ending point randomly ? ( 1 : yes / 2 : no)");
+
+                choice = sc.nextInt();
+                if (choice == 1){
+                    randomPoint = true;
+                    labyrinth.gameStartRandom();
+                    choiceDone = true;
+                }
+                else if (choice == 2) {
+                    randomPoint = false;
+                    labyrinth.gameStart();
+                    choiceDone = true;
+                }
+                else {
+                    System.out.println("Please choose a valid option");
+                }
+            }
             labyrinth.display();
         }
+
     }
 }
