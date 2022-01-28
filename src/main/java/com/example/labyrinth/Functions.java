@@ -99,7 +99,7 @@ public class Functions {
                 System.out.println("Please enter a Pseudo");
                 String pseudo = sc.next();
                 write(pseudo + "-t" + turn + "-l" + labyrinth.getGrid().length + "-c" + labyrinth.getGrid()[1].length);
-                automated = false;
+                automated = true;
                 continue;
             } else {
                 System.out.println("Please choose the size of your labyrinth :");
