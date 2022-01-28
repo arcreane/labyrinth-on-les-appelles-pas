@@ -17,7 +17,7 @@ public class Finder {
 
 
         //Object creations
-        Box actualBox = new Box(0, 0, 0);
+        Box actualBox;
         Map<Integer, Box> dictBox = new HashMap<>();
         Map dictX = new HashMap();
         Map dictY = new HashMap();
@@ -41,8 +41,8 @@ public class Finder {
 
 
         //1 -- Use the grid to look for the starting point and register it as the "actualBox"
-        for (int line = 1; line < H - 2; line++) {
-            for (int column = 1; column < W - 2; column++) {
+        for (int line = 1; line < H ; line++) {
+            for (int column = 1; column < W ; column++) {
                 if (grid[line][column].getColor().equals("▪ ")) {
                     actualBox = grid[line][column];
                     actualIndex = actualBox.getIndex();

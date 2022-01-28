@@ -4,9 +4,8 @@ import com.example.labyrinth.classes.Box;
 import com.example.labyrinth.classes.Finder;
 import com.example.labyrinth.classes.Labyrinth;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
 
 public class Functions {
     public static Scanner sc = new Scanner(System.in);
@@ -14,33 +13,48 @@ public class Functions {
     private static Labyrinth labyrinth = new Labyrinth(0, 0, animation);
     private static int turn = 0;
     private static boolean exitFund = false;
+    private static boolean automated = false;
+    private static boolean labyrinthImported = false;
 
     public static int Menu(){
         clear();
-        labyrinth = new Labyrinth(11, 31, animation);
+        labyrinth = new Labyrinth(12, 30, animation);
         labyrinth.create();
+        clear();
         labyrinth.display();
         System.out.println("""
                 MENU :\s
                 1 : Labyrinth Generation\s
                 2 : Rules\s
                 3 : Options\s
-                4 : Leave\s
+                4 : Scores\s
+                5 : Leave\s
                 """);
+
         return sc.nextInt();
     }
 
     public static void Play() {
-        clear();
-        System.out.println("Please choose the size of your labyrinth :");
-        System.out.print("Height : ");
-        int height = sc.nextInt();
-        System.out.print("Width : ");
-        int width = sc.nextInt();
-        labyrinth = new Labyrinth(height, width, animation);
-        labyrinth.create();
-        labyrinth.gameStart();
-        labyrinth.display();
+        int height;
+        int width;
+        if (!labyrinthImported) {
+            clear();
+            System.out.println("Please choose the size of your labyrinth :");
+            System.out.print("Height : ");
+            height = sc.nextInt();
+            System.out.print("Width : ");
+            width = sc.nextInt();
+            labyrinth = new Labyrinth(height, width, animation);
+            labyrinth.create();
+            labyrinth.gameStart();
+            labyrinth.display();
+        }
+        else {
+            height = labyrinth.getGrid().length;
+            width = labyrinth.getGrid()[1].length;
+            labyrinthImported = false;
+            labyrinth.display();
+        }
         int choice;
         boolean resolved = false;
         while (!resolved) {
@@ -53,17 +67,23 @@ public class Functions {
                 labyrinth.setGrid(Finder.bfs(labyrinth.getGrid(), animation));
                 labyrinth.display();
                 resolved = true;
+                automated = true;
 
             } else if (Strchoice.equals("z") || Strchoice.equals("q") || Strchoice.equals("s") || Strchoice.equals("d")) {
                 Move(labyrinth.getGrid(), Strchoice);
             }
         }
         while (true) {
+            String score = "";
+            if (!automated){
+                score = "4 : Save this Maze";
+            }
             System.out.println("""
                     Play again ?\s
                     1 : With the same size\s
-                    2 : With a different size
-                    3 : Menu""");
+                    2 : With a different size\s
+                    3 : Menu\s\n""" +
+                    score);
             choice = sc.nextInt();
             if (choice == 3) {
                 break;
@@ -72,6 +92,13 @@ public class Functions {
                 labyrinth.create();
                 labyrinth.gameStart();
                 labyrinth.display();
+            }
+            else if (!automated && choice==4){
+                System.out.println("Please enter a Pseudo");
+                String pseudo = sc.next();
+                write(pseudo + "-t" + turn + "-l" + labyrinth.getGrid().length + "-c" + labyrinth.getGrid()[1].length);
+                automated = false;
+                continue;
             } else {
                 System.out.println("Please choose the size of your labyrinth :");
                 System.out.print("Height : ");
@@ -135,8 +162,8 @@ public class Functions {
         int W = grid[0].length;
         int H = grid.length;
         Box actualBox = new Box(0,0,0);
-        for (int line = 1; line < H - 2; line++) {
-            for (int column = 1; column < W - 2; column++) {
+        for (int line = 1; line < H; line++) {
+            for (int column = 1; column < W; column++) {
                 if (grid[line][column].getColor().equals("▪ ")) {
                     actualBox = grid[line][column];
                     column = W;
@@ -193,5 +220,71 @@ public class Functions {
     private static void clear() {
         System.out.print("\033[H\033[2J");
         System.out.flush();
+    }
+
+
+
+    static Labyrinth read(String filePath){
+        String path = "/Users/celian/IdeaProjects/labyrinth/src/main/java/com/example/labyrinth/mazeSave/";
+        File fichier =  new File(path + filePath) ;
+
+        ObjectInputStream ois = null;
+        try {
+            ois = new ObjectInputStream(new FileInputStream(fichier));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Labyrinth m = null;
+        try {
+            m = (Labyrinth) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return m;
+    }
+
+    static void write(String filePath){
+
+        String path = "/Users/celian/IdeaProjects/labyrinth/src/main/java/com/example/labyrinth/mazeSave/";
+        File file =  new File(path + filePath) ;
+        ObjectOutputStream oos = null;
+        try {
+            oos = new ObjectOutputStream(new FileOutputStream(file));}
+        catch (IOException e) {e.printStackTrace();}
+        try {
+            oos.writeObject(labyrinth) ;}
+        catch (IOException e) {e.printStackTrace();}
+    }
+
+
+    public static void Score(){
+        File dir  = new File("/Users/celian/IdeaProjects/labyrinth/src/main/java/com/example/labyrinth/mazeSave");
+        File[] list = dir.listFiles();
+        ArrayList<String> mazeList = new ArrayList<>();
+        int i = 1;
+        for(File item : list) {
+            if (item.isFile()) {
+                String turn = item.getName().split("-")[1].split("t")[1];
+                String name = item.getName().split("-")[0];
+                String line = item.getName().split("-")[2].split("l")[1];
+                String column = item.getName().split("-")[3].split("c")[1];
+
+                System.out.println(i + " : Maze of " + line + " lines on "+ column + " column solved by " + name + " within " + turn + " turn");
+                mazeList.add(item.getName());
+                i ++;
+            }
+        }
+
+        System.out.println("Choose a Maze you want to try or press 0 to go back");
+        int choice = sc.nextInt();
+        if (choice!=0){
+            if (choice <= mazeList.size()){
+                labyrinth = read(mazeList.get(choice-1));
+                labyrinthImported = true;
+                labyrinth.Reset();
+                Play();
+            }
+        }
     }
 }

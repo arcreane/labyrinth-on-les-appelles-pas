@@ -1,12 +1,21 @@
 package com.example.labyrinth.classes;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.*;
 
-public class Labyrinth {
+//Labyrinth class, the labyrinth can create itself, put the player and the ending point on the maze and
+//display itself
+public class Labyrinth implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 975142525840047392L;
     Box[][] grid;
     boolean created = false;
-    boolean animations = true;
+    boolean animations;
+    int lineStart;
+    int columnStart;
 
+    //Variables initialization, these variables are used to display the walls
     private final static String HORIZONTAL = "\u2501";
     private final static String VERTICAL = "\u2503";
     private final static String CORNER_TL = "\u250F";
@@ -19,12 +28,13 @@ public class Labyrinth {
     private final static String TEE_RIGHT = "\u252B";
     private final static String CROSS = "\u254B";
 
-    public Labyrinth(int length, int witdh, boolean animation) {
-        this.grid = new Box[length][witdh];
+    //Constructor, need the number of lines and columns and if the animation is enabled or not
+    public Labyrinth(int line, int column, boolean animation) {
+        this.grid = new Box[line][column];
         this.animations = animation;
-
     }
 
+    //Used to check what type is the wall and to change his corresponding character
     private String displayWall(Box wallBox) {
         int line = wallBox.getLine();
         int column = wallBox.getColumn();
@@ -32,31 +42,23 @@ public class Labyrinth {
         boolean upBox = false;
         boolean rightBox = false;
         boolean downBox = false;
-
-
         try {
             leftBox = grid[line][column - 1].compareType("wall");
         } catch (Exception e) {
         }
         try {
             rightBox = grid[line][column + 1].compareType("wall");
-        } catch (Exception e) {
-        }
+        } catch (Exception e) {}
         try {
             upBox = grid[line - 1][column].compareType("wall");
-        } catch (Exception e) {
-        }
+        } catch (Exception e) {}
         try {
             downBox = grid[line + 1][column].compareType("wall");
-        } catch (Exception e) {
-        }
-
-
+        } catch (Exception e) {}
         if (!upBox && !downBox) {
             if (!rightBox) {
                 return HORIZONTAL + " ";
             }
-
             return HORIZONTAL + HORIZONTAL;
         } else if (!leftBox && !rightBox) {
             return VERTICAL + " ";
@@ -76,72 +78,56 @@ public class Labyrinth {
             return TEE_BOTTOM + HORIZONTAL;
         } else if (!upBox) {
             return TEE_TOP + HORIZONTAL;
-
         } else {
             return CROSS + HORIZONTAL;
         }
+}
 
-    }
 
-
+    //Display the maze, each Box contains information about his "color", this functions display all box in order and add
+    //a border all around the maze
     public void display() {
         clear();
         System.out.println("\n\n\n");
-        for (int i = 0; i < grid[0].length; i++) {
+        System.out.print(CORNER_TL);
+        for (int i = 1; i < grid[0].length; i++) {
             System.out.print(HORIZONTAL + HORIZONTAL);
         }
+        System.out.print(CORNER_TR);
         System.out.println();
         for (int line = 1; line < this.grid.length; line++) {
             System.out.print(VERTICAL);
             for (int column = 1; column < this.grid[line].length; column++) {
                 if (this.grid[line][column].compareType("path")) {
                     System.out.print(this.grid[line][column].getColor());
-                } else {
+                }
+                else {
                     System.out.print(displayWall(this.grid[line][column]));
                 }
             }
             System.out.print(VERTICAL);
-            System.out.println("");
+            System.out.println();
         }
-        for (int i = 0; i < grid[0].length; i++) {
+        System.out.print(CORNER_BL);
+        for (int i = 1; i < grid[0].length; i++) {
             System.out.print(HORIZONTAL + HORIZONTAL);
         }
+        System.out.print(CORNER_BR);
+
         System.out.println();
     }
 
-    public void displayIndex() {
-        clear();
-        System.out.println("\n\n\n");
-        for (int i = 0; i < grid[0].length; i++) {
-            System.out.print(HORIZONTAL + HORIZONTAL);
-        }
-        System.out.println();
-        for (int line = 1; line < this.grid.length; line++) {
-            System.out.print(VERTICAL);
-            for (int column = 1; column < this.grid[line].length; column++) {
-                if (this.grid[line][column].compareType("path")) {
-                    System.out.print(this.grid[line][column].getIndex() + " ");
-                } else {
-                    System.out.print(displayWall(this.grid[line][column]));
-                }
-            }
-            System.out.print(VERTICAL);
-            System.out.println("");
-        }
-        for (int i = 0; i < grid[0].length; i++) {
-            System.out.print(HORIZONTAL + HORIZONTAL);
-        }
-        System.out.println();
-    }
 
+    //Create the maze as a grid first (each path is surrounded by 4 walls or by nothing)
+    //Then use the Walk() and Hunt() functions, the walk functions start from a random point and will break walls around
+    //him to create a way until he is blocked, then the Hunt() will find a "path" Box that's still not blocked and start to walk
     public void create() {
         int index = 1;
         for (int line = 1; line < this.grid.length; line++) {
             for (int column = 1; column < this.grid[line].length; column++) {
                 Box box = new Box(line, column, index);
                 index += 1;
-                if (line % 2 == 0 || column % 2 == 0) {
-                } else {
+                if (line % 2 != 0 && column % 2 != 0) {
                     box.changeType();
                 }
                 this.grid[line][column] = box;
@@ -157,6 +143,10 @@ public class Labyrinth {
         display();
     }
 
+    //This function will start from a given Box and then go around the maze while breaking walls while the Box isn't blocked
+    //The dictionary dictX and dictY are used to determine the 4 possible directions from the Box and try them in a random way
+    //Each walk will be different from another due to the randomization of the list("S", "E", "N", "W") that contains
+    //the possibilities of direction
     private void walk(Box actualBox) {
         Map dictX = new HashMap();
         dictX.put("S", 0);
@@ -170,7 +160,7 @@ public class Labyrinth {
         dictY.put("W", 0);
         dictY.put("N", 1);
 
-        ArrayList<String> list = new ArrayList<String>(List.of("S", "E", "N", "W"));
+        ArrayList<String> list = new ArrayList<>(List.of("S", "E", "N", "W"));
         boolean blocked = false;
         while (!blocked) {
             boolean moved = false;
@@ -182,7 +172,6 @@ public class Labyrinth {
                 int dcolumn = (int) dictY.get(list.get(i));
                 int line = actualBox.getLine();
                 int column = actualBox.getColumn();
-                int validSide = 0;
                 if ((line + dline < grid[line].length && line + dline >= 1)
                         && (column + dcolumn < grid[line].length && column + dcolumn >= 1)
                         && (line + 2 * dline < grid.length && column + 2 * dcolumn < grid[line].length)
@@ -231,14 +220,16 @@ public class Labyrinth {
         }
     }
 
+    //This function look for a visited Box that's still not blocked and then return it to the Walk()
+    //If Hunt() can't find a visited cell that's not blocked he changes the global parameter created that will break the
+    //construction loop
     private Box hunt() {
         for (int line = 1; line < this.grid.length; line++) {
             for (int column = 1; column < this.grid[line].length; column++) {
                 if (grid[line][column].getType().equals("path") && grid[line][column].isVisited()) {
-                    if (grid[line][column].isBlocked()) {
-                        continue;
-                    } else
+                    if (!grid[line][column].isBlocked()) {
                         return grid[line][column];
+                    }
                 }
             }
         }
@@ -246,23 +237,26 @@ public class Labyrinth {
         return null;
     }
 
+    //Clear the screen...
     private void clear() {
         System.out.print("\033[H\033[2J");
         System.out.flush();
     }
 
 
+    //Place the starting point and the ending point on the maze
     public void gameStart() {
         placeEmoji("▪ ");
         placeEmoji("▫ ");
     }
 
+    //Place the "emoji" given in a random position
     private void placeEmoji(String emoji) {
         Random random = new Random();
         int line;
         int column;
-        boolean choosed = false;
-        while (!choosed) {
+        boolean chosed = false;
+        while (!chosed) {
             line = random.nextInt(grid[0].length - 1) + 1;
             column = random.nextInt(grid.length - 1) + 1;
 
@@ -271,7 +265,11 @@ public class Labyrinth {
                     if (i == line && j == column) {
                         if (grid[line][column].compareType("path")) {
                             grid[line][column].setColor(emoji);
-                            choosed = true;
+                            if (emoji.equals("▪ ")){
+                                lineStart = line;
+                                columnStart = column;
+                            }
+                            chosed = true;
                         }
                     }
                 }
@@ -286,5 +284,22 @@ public class Labyrinth {
     public void setGrid(Box[][] grid) {
         this.grid = grid;
     }
+
+    public void Reset(){
+        int W = grid[0].length;
+        int H = grid.length;
+        for (int line = 1; line < H ; line++) {
+            for (int column = 1; column < W ; column++) {
+                if (grid[line][column].getColor().equals("▪ ")) {
+                    grid[line][column].setColor("  ");
+                    column = W;
+                    line = H;
+                }
+            }
+        }
+        grid[lineStart][columnStart].setColor("▪ ");
+    }
+
+
 
 }

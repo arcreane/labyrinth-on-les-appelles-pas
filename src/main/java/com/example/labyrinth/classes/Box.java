@@ -1,8 +1,12 @@
 package com.example.labyrinth.classes;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Box {
+public class Box implements Serializable {
+    @Serial
+    private static final long serialVersionUID = -6087867378374336741L;
     int line;
     int column;
     String color = "  ";
